@@ -31,6 +31,7 @@ Pipfile.lock
 Pipfile
 venv/
 env/
+env312/
 ENV/
 .venv/
 .idea/
