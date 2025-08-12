@@ -4,7 +4,9 @@ from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
+from tags.models import TaggedItem
 from . import models
+
 
 
 class InventoryFilter(admin.SimpleListFilter):
@@ -83,8 +85,9 @@ class CustomerAdmin(admin.ModelAdmin):
 
 
 class TagInline(GenericTabularInline):
-    model = models.TaggedItem
-
+    model = TaggedItem
+    autocomplete_fields = ['tag']
+    extra = 1
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['collection']
