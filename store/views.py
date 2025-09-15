@@ -1,4 +1,3 @@
-from multiprocessing import context
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
 from rest_framework.decorators import action
@@ -12,17 +11,15 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, D
 from .permissions import FullDjangoModelPermissions, IsAdminOrReadOnly, ViewCustomerHistoryPermission
 
 from .pagination import DefaultPagination
-
 from .filters import ProductFilter
-from .models import Cart, CartItem, Customer, Order, OrderItem, Product, Collection, Review
-from .serializers import CreateOrderSerializer, OrderSerializer, UpdateCartItemSerializer, AddCartItemSerializer, CartItemSerializer, CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, UpdateOrderSerializer
-from store import serializers
+from .models import Cart, CartItem, Customer, Order, OrderItem, Product, Collection, ProductImage, Review
+from .serializers import CreateOrderSerializer, CustomerSerializer, OrderSerializer, ProductImageSerializer, UpdateCartItemSerializer, AddCartItemSerializer, CartItemSerializer, CartSerializer, ProductSerializer, CollectionSerializer, ReviewSerializer, UpdateOrderSerializer
 
 # Create your views here.
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related('images').all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     pagination_class = DefaultPagination
@@ -95,7 +92,7 @@ class CartItemViewSet(ModelViewSet):
 
 class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
-    serializer_class = serializers.CustomerSerializer
+    serializer_class = CustomerSerializer
     permission_classes = [IsAdminUser]
 
     @action(detail=True, permission_classes=[ViewCustomerHistoryPermission])
@@ -150,3 +147,13 @@ class OrderViewSet(ModelViewSet):
 
         customer_id = Customer.objects.only('id').get(user_id=user.id)
         return Order.objects.filter(customer_id=customer_id)
+
+
+class ProductImageViewSet(ModelViewSet):
+    serializer_class = ProductImageSerializer
+
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs['product_pk']}
+    
+    def get_queryset(self):
+        return ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
