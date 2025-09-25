@@ -2,6 +2,7 @@ from django.contrib import admin, messages
 from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.utils.html import format_html, urlencode
+from django.utils.safestring import mark_safe
 from django.urls import reverse
 from . import models
 
@@ -84,11 +85,13 @@ class CustomerAdmin(admin.ModelAdmin):
 
 class ProductImageInline(admin.TabularInline):
     model = models.ProductImage
+    extra = 1
     readonly_fields = ['thumbnail']
 
     def thumbnail(self, instance):
         if instance.image.name != '':
-            return '<img src="" />'
+            return format_html(f'<img src="{instance.image.url}" class="thumbnail" />')
+        return ""
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -122,6 +125,11 @@ class ProductAdmin(admin.ModelAdmin):
             f'{updated_count} products were updated.',
             messages.ERROR
         )
+
+    class Media:
+        css = {
+            'all': ['store/styles.css']
+        }
 
 
 # admin.site.register(models.Product)
