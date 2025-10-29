@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, DjangoModelPermissions
+from django.core.mail import send_mail
 
 from .permissions import FullDjangoModelPermissions, IsAdminOrReadOnly, ViewCustomerHistoryPermission
 
@@ -130,6 +131,16 @@ class OrderViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         order = serializer.save()
         serializer = OrderSerializer(order)
+
+        # Send order confirmation email
+        send_mail(
+            subject='Order Confirmation',
+            message=f'Thank you for your order #{order.id}!',
+            from_email=None,  # Uses EMAIL_HOST_USER
+            recipient_list=[request.user.email],
+            fail_silently=False,
+        )
+
         return Response(serializer.data)
 
     def get_serializer_class(self):
@@ -154,6 +165,6 @@ class ProductImageViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'product_id': self.kwargs['product_pk']}
-    
+
     def get_queryset(self):
         return ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
