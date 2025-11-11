@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'debug_toolbar',
+    'corsheaders',
     'myapp',
     'store',
     'tags',
@@ -59,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 INTERNAL_IPS = [
@@ -152,6 +154,9 @@ REST_FRAMEWORK = {
     ),
 
 }
+
+CORS_ORGIN_ALLOW_ALL = True
+
 AUTH_USER_MODEL = 'core.User'
 
 DJOSER = {
