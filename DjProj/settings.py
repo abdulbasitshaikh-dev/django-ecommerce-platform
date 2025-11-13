@@ -178,3 +178,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'abdulbasitshaikh2323@gmail.com'
 EMAIL_HOST_PASSWORD = 'sjjf hnna ktws rfdu'
+
+# allow your frontend origin (Vite default 5173 / CRA 3000)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+
+# for quick dev only (allows all origins)
+# CORS_ALLOW_ALL_ORIGINS = True
